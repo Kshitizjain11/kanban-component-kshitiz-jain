@@ -1,23 +1,32 @@
-import React from 'react'
-import type { Task } from './KanbanBoard.types'
-import { getPriorityColor, isOverdue } from '../../utils/task.utils';
+import React from 'react';
 import clsx from 'clsx';
+import { isOverdue, getPriorityColor } from '../../utils/task.utils';
 import { format } from 'date-fns';
+import type { Task } from './KanbanBoard.types';
 
 interface KanbanCardProps {
-    task: Task;
-    onClick : ()=>void;
-    darkMode ?: boolean
+  task: Task;
+  onClick: () => void;
+  darkMode?: boolean;
 }
 
-const KanbanCard : React.FC<KanbanCardProps> = ({task,onClick,darkMode=false}) => {
-    const priorityBadge = getPriorityColor(task.priority)
+const KanbanCard: React.FC<KanbanCardProps> = React.memo(({ task, onClick, darkMode = false }) => {
+  const priorityBadge = getPriorityColor(task.priority);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onClick();
+    }
+  };
+
   return (
     <div
       id={task.id}
       role="button"
       tabIndex={0}
       aria-label={`${task.title}. Status: ${task.columnId}. Priority: ${task.priority}. Press space to grab.`}
+      onKeyDown={handleKeyDown}
       onClick={onClick}
       className={clsx(
         'mb-2 p-3 rounded-md cursor-pointer shadow-sm hover:shadow-md transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500',
@@ -75,7 +84,6 @@ const KanbanCard : React.FC<KanbanCardProps> = ({task,onClick,darkMode=false}) =
         </div>
       )}
     </div>
-  )
-}
-
-export default KanbanCard
+  );
+});
+export default KanbanCard;

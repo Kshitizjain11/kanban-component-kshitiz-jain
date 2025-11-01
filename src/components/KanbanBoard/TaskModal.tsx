@@ -1,31 +1,41 @@
-import React, { useState } from 'react'
-import type { Column, Task } from './KanbanBoard.types'
+import React, { useState } from 'react';
 import clsx from 'clsx';
+import type { Task, Column } from './KanbanBoard.types';
 
 interface TaskModalProps {
-    task: Task;
-    columns: Column[];
-    onSave: (task:Task)=>void;
-    onDelete: (taskId:string)=>void;
-    onClose: ()=>void;
-    darkMode?: boolean;
+  task: Task;
+  columns: Column[];
+  onSave: (task: Task) => void;
+  onDelete: (taskId: string) => void;
+  onClose: () => void;
+  darkMode?: boolean;
 }
 
-const TaskModal: React.FC<TaskModalProps> = ({task,columns,onSave,onClose,darkMode=false,onDelete}) => {
-    const [editedTask, setEditedTask] = useState<Task>(task);
+const TaskModal: React.FC<TaskModalProps> = ({ task, columns, onSave, onDelete, onClose, darkMode = false }) => {
+  const [editedTask, setEditedTask] = useState<Task>(task);
 
-    const handleChange = (e:React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>)=>{
-        const { name, value } = e.target;
-        setEditedTask({ ...editedTask, [name]: value });
-    }
-    const handleTagsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setEditedTask({ ...editedTask, tags: e.target.value.split(',').map(tag => tag.trim()).filter(Boolean) });
-    };
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        onSave(editedTask);
-    };
-
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setEditedTask({ ...editedTask, [name]: value });
+  };
+  const handleTagsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEditedTask({ ...editedTask, tags: e.target.value.split(',').map(tag => tag.trim()).filter(Boolean) });
+  };
+  const handleDueDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEditedTask({ ...editedTask, dueDate: e.target.value ? new Date(e.target.value) : undefined });
+  };
+  const handleAssigneeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEditedTask({
+      ...editedTask,
+      assignee: e.target.value ? { name: e.target.value, avatar: editedTask.assignee?.avatar ?? '' } : undefined,
+    });
+  };
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSave(editedTask);
+  };
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-description">
@@ -111,6 +121,7 @@ const TaskModal: React.FC<TaskModalProps> = ({task,columns,onSave,onClose,darkMo
                     : "bg-white border-gray-300 text-gray-900 focus:border-blue-400"
                 )}
                 value={editedTask.assignee?.name ?? ''}
+                onChange={handleAssigneeChange}
               />
             </div>
             {/* Tags */}
@@ -145,6 +156,7 @@ const TaskModal: React.FC<TaskModalProps> = ({task,columns,onSave,onClose,darkMo
                     : "bg-white border-gray-300 text-gray-900 focus:border-blue-400"
                 )}
                 value={editedTask.dueDate ? new Date(editedTask.dueDate).toISOString().split('T')[0] : ''}
+                onChange={handleDueDateChange}
               />
             </div>
             {/* Column */}
@@ -193,7 +205,7 @@ const TaskModal: React.FC<TaskModalProps> = ({task,columns,onSave,onClose,darkMo
         </form>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default TaskModal
+export default TaskModal;

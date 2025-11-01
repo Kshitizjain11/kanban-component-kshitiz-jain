@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import KanbanBoard from './components/KanbanBoard/KanbanBoard'
+import { sampleColumns } from './utils/column.utils'
 
 function App() {
   const [darkMode, setDarkMode] = useState(false)
@@ -8,7 +10,7 @@ function App() {
       <div className="container mx-auto p-4">
         <div className="flex justify-between items-center mb-6">
           <h1 className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-            Kanban Board
+            Kanban Board 
           </h1>
           <button
             onClick={() => setDarkMode(!darkMode)}
@@ -22,7 +24,9 @@ function App() {
           </button>
         </div>
         
-       
+        <div className="h-[calc(100vh-120px)] bg-white rounded-xl shadow-lg overflow-hidden">
+          <KanbanBoard initialColumns={sampleColumns} darkMode={darkMode} />
+        </div>
       </div>
     </div>
     </>

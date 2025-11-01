@@ -1,19 +1,40 @@
-import React, { useMemo } from 'react'
-import type { Column, Task } from './KanbanBoard.types'
+import React, { useCallback, useMemo, useState } from 'react';
+import { useSortable, SortableContext } from '@dnd-kit/sortable';
 import clsx from 'clsx';
+import type { Task, Column } from './KanbanBoard.types';
 
 interface KanbanColumnProps {
-    column: Column;
-    onAddTask: ()=>void;
-    onEditTask: (task: Task)=>void;
-    darkMode?: boolean;
-    renderCard: (task:Task,onClick:()=>void,darkMode?:boolean) => React.ReactElement; 
+  column: Column;
+  onAddTask: () => void;
+  onEditTask: (task: Task) => void;
+  darkMode?: boolean;
+  renderCard: (task: Task, onClick: () => void, darkMode?: boolean) => React.ReactElement;
 }
 
-const KanbanColumn:React.FC<KanbanColumnProps> = ({column,onAddTask,onEditTask,darkMode=false,renderCard}) => {
-  
-    return (
+const KanbanColumn: React.FC<KanbanColumnProps> = ({ column, onAddTask, onEditTask, darkMode = false, renderCard }) => {
+  const { setNodeRef } = useSortable({
+    id: column.id,
+    data: { type: 'Column', column }
+  });
+
+  // Simple virtualization for long lists
+  const [visibleRange, setVisibleRange] = useState({ start: 0, end: 20 });
+  const itemHeight = 120;
+  const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
+    const scrollTop = e.currentTarget.scrollTop;
+    const start = Math.floor(scrollTop / itemHeight);
+    const end = start + 20;
+    setVisibleRange({ start, end });
+  }, []);
+
+  const visibleTasks = useMemo(
+    () => column.tasks.slice(visibleRange.start, visibleRange.end),
+    [column.tasks, visibleRange]
+  );
+
+  return (
     <div
+      ref={setNodeRef}
       id={column.id}
       role="region"
       aria-label={`${column.title} column. ${column.tasks.length} tasks.`}
@@ -34,8 +55,14 @@ const KanbanColumn:React.FC<KanbanColumnProps> = ({column,onAddTask,onEditTask,d
           )}>{column.tasks.length}</span>
         </div>
       </div>
-      <div className="flex-1 p-2 overflow-y-auto min-h-[200px]" aria-live="polite" style={{ height: '70vh' }}>
-        
+      <div className="flex-1 p-2 overflow-y-auto min-h-[200px]" aria-live="polite" onScroll={handleScroll} style={{ height: '70vh' }}>
+        <div style={{ height: column.tasks.length * itemHeight }}>
+          <SortableContext items={visibleTasks.map(task => task.id)}>
+            {visibleTasks.map(task =>
+              renderCard(task, () => onEditTask(task), darkMode)
+            )}
+          </SortableContext>
+        </div>
       </div>
       <div className="p-2 border-t border-gray-200 dark:border-gray-600">
         <button
@@ -52,7 +79,6 @@ const KanbanColumn:React.FC<KanbanColumnProps> = ({column,onAddTask,onEditTask,d
         </button>
       </div>
     </div>
-  )
-}
-
-export default KanbanColumn
+  );
+};
+export default KanbanColumn;
