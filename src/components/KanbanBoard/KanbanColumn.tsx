@@ -2,6 +2,8 @@ import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useSortable, SortableContext } from '@dnd-kit/sortable';
 import clsx from 'clsx';
 import type { Task, Column } from './KanbanBoard.types';
+import { MdOutlineTaskAlt } from 'react-icons/md';
+import { HiOutlineDotsVertical } from 'react-icons/hi';
 
 interface KanbanColumnProps {
   column: Column;
@@ -40,8 +42,11 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
   const [newTitle, setNewTitle] = useState(column.title);
   const [showWipInput, setShowWipInput] = useState(false);
   const [wipLimitValue, setWipLimitValue] = useState(column.wipLimit?.toString() || '');
+  const [menuPosition, setMenuPosition] = useState({ top: 0, right: 0 });
   const menuRef = useRef<HTMLDivElement>(null);
+  const menuDropdownRef = useRef<HTMLDivElement>(null);
   const renameInputRef = useRef<HTMLInputElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
 
   const taskCount = column.tasks.length;
   const isWipExceeded = column.wipLimit !== undefined && taskCount > column.wipLimit;
@@ -50,7 +55,11 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
   // Close menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+      const target = event.target as Node;
+      const clickedInsideMenu = menuRef.current?.contains(target);
+      const clickedInsideDropdown = menuDropdownRef.current?.contains(target);
+      
+      if (!clickedInsideMenu && !clickedInsideDropdown) {
         setIsMenuOpen(false);
       }
     };
@@ -84,6 +93,17 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
     setShowWipInput(false);
     setIsMenuOpen(false);
   }, [wipLimitValue, column.id, onSetWipLimit]);
+
+  const handleMenuButtonClick = useCallback(() => {
+    if (menuButtonRef.current) {
+      const rect = menuButtonRef.current.getBoundingClientRect();
+      setMenuPosition({ 
+        top: rect.bottom + window.scrollY, 
+        right: window.innerWidth - rect.right 
+      });
+    }
+    setIsMenuOpen(!isMenuOpen);
+  }, [isMenuOpen]);
 
 
   return (
@@ -138,22 +158,27 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
           {(onRenameColumn || onSetWipLimit || onDeleteColumn || onToggleCollapse) && (
             <div className="relative" ref={menuRef}>
               <button
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                ref={menuButtonRef}
+                onClick={handleMenuButtonClick}
                 className={clsx(
-                  'w-6 h-6 rounded flex items-center justify-center text-xs',
+                  'w-6 h-6 rounded flex items-center justify-center text-md',
                   darkMode ? 'hover:bg-gray-600 text-gray-300' : 'hover:bg-gray-200 text-gray-600'
                 )}
                 aria-label="Column options"
               >
-                ⋮
+                <HiOutlineDotsVertical/>
               </button>
 
               {/* Options Menu Dropdown */}
               {isMenuOpen && (
-                <div className={clsx(
-                  'absolute right-0 top-8 w-48 rounded-lg shadow-lg z-20',
+                <div ref={menuDropdownRef} className={clsx(
+                  'fixed w-48 rounded-lg shadow-lg z-50',
                   darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200'
-                )}>
+                )}
+                style={{ 
+                  top: `${menuPosition.top}px`, 
+                  right: `${menuPosition.right}px` 
+                }}>
                   {onRenameColumn && (
                     <button
                       onClick={() => {
@@ -289,32 +314,34 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
       {/* Tasks List - Collapsible */}
       {!isCollapsed && (
         <div className={clsx(
-          'flex-1 p-2 overflow-y-auto min-h-[200px] max-h-[calc(100vh-200px)]',
+          'flex-1 overflow-y-auto min-h-[200px] max-h-[calc(100vh-200px)]',
           darkMode ? 'bg-gray-700' : 'bg-gray-50'
         )} aria-live="polite">
-          {column.tasks.length === 0 ? (
-            // Empty State
-            <div className={clsx(
-              'flex flex-col items-center justify-center py-8 px-4 rounded-lg',
-              darkMode ? 'text-gray-400' : 'text-gray-500'
-            )}>
-              <div className="text-4xl mb-2">
-              <span className="material-symbols-outlined text-gray-400">task_alt</span>
+          <div className="px-2 pt-2 pb-6">
+            {column.tasks.length === 0 ? (
+              // Empty State
+              <div className={clsx(
+                'flex flex-col items-center justify-center py-8 px-4 rounded-lg',
+                darkMode ? 'text-gray-400' : 'text-gray-500'
+              )}>
+                <div className="text-3xl mb-2">
+                <MdOutlineTaskAlt className='text-gray-400'/> 
+                </div>
+                <p className="text-sm font-medium">No tasks yet</p>
+                <p className="text-xs mt-1">Click "Add Task" to get started</p>
               </div>
-              <p className="text-sm font-medium">No tasks yet</p>
-              <p className="text-xs mt-1">Click "Add Task" to get started</p>
-            </div>
-          ) : (
-            <SortableContext items={column.tasks.map(task => task.id)}>
-              {column.tasks.map(task =>
-                renderCard(
-                  task, 
-                  () => onEditTask(task),
-                  darkMode
-                )
-              )}
-            </SortableContext>
-          )}
+            ) : (
+              <SortableContext items={column.tasks.map(task => task.id)}>
+                {column.tasks.map(task =>
+                  renderCard(
+                    task, 
+                    () => onEditTask(task),
+                    darkMode
+                  )
+                )}
+              </SortableContext>
+            )}
+          </div>
         </div>
       )}
 

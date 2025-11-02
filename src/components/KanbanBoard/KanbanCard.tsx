@@ -3,6 +3,8 @@ import clsx from 'clsx';
 import { isOverdue, getInitials } from '../../utils/task.utils';
 import { format } from 'date-fns';
 import type { Task } from './KanbanBoard.types';
+import { MdEdit } from 'react-icons/md';
+import { FaClone, FaTrash } from 'react-icons/fa6';
 
 interface KanbanCardProps {
   task: Task;
@@ -84,13 +86,13 @@ const KanbanCard: React.FC<KanbanCardProps> = React.memo(({
             <button
               onClick={(e) => handleQuickActionClick(e, onEdit)}
               className={clsx(
-                'w-6 h-6 rounded-full flex items-center justify-center text-xs',
+                'w-6 h-6 rounded-full flex items-center justify-center text-md',
                 'bg-white/90 hover:bg-white shadow-sm transition-opacity',
                 darkMode ? 'text-gray-800' : 'text-gray-700'
               )}
               aria-label="Edit task"
             >
-              <i className="fa-solid fa-pen cursor-pointer"></i>
+              <MdEdit/>
             </button>
           )}
           {onDuplicate && (
@@ -103,7 +105,7 @@ const KanbanCard: React.FC<KanbanCardProps> = React.memo(({
               )}
               aria-label="Duplicate task"
             >
-              <i className="fa-solid fa-copy cursor-pointer"></i>
+              <FaClone/>
             </button>
           )}
           {onDelete && (
@@ -116,7 +118,7 @@ const KanbanCard: React.FC<KanbanCardProps> = React.memo(({
               )}
               aria-label="Delete task"
             >
-              <i className="fa-solid fa-trash cursor-pointer"></i>
+              <FaTrash/>
             </button>
           )}
         </div>

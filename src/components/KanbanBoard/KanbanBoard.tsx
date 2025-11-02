@@ -328,6 +328,25 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ initialColumns, darkMode = fa
     );
   }, []);
 
+  const handleAddColumn = useCallback(() => {
+    if (columns.length >= 6) {
+      window.alert('Maximum limit of 6 columns reached!');
+      return;
+    }
+    
+    const newColumnId = `column-${Date.now()}`;
+    const newColumnTitle = `New Column ${columns.length + 1}`;
+    
+    setColumns(prevColumns => [
+      ...prevColumns,
+      {
+        id: newColumnId,
+        title: newColumnTitle,
+        tasks: []
+      }
+    ]);
+  }, [columns.length]);
+
   const handleDeleteColumn = useCallback((columnId: string) => {
     if (window.confirm('Are you sure you want to delete this column? All tasks will be moved to the first column.')) {
       setColumns(prevColumns => {
@@ -514,6 +533,31 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ initialColumns, darkMode = fa
                 />
               </div>
             ))}
+            
+            {/* Add Column Button */}
+            {columns.length < 6 && (
+              <div className={clsx(
+                'sm:snap-start shrink-0',
+                'w-full sm:w-[280px] md:w-[300px] lg:w-[320px]'
+              )}>
+                <button
+                  onClick={handleAddColumn}
+                  className={clsx(
+                    'w-full h-[200px] rounded-xl border-2 border-dashed',
+                    'flex items-center justify-center gap-2',
+                    'transition-all duration-200',
+                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2',
+                    darkMode
+                      ? 'border-gray-600 bg-gray-700/50 hover:bg-gray-700 hover:border-gray-500 text-gray-300'
+                      : 'border-gray-300 bg-gray-50 hover:bg-gray-100 hover:border-gray-400 text-gray-600'
+                  )}
+                  aria-label="Add another list"
+                >
+                  <span className="text-2xl">+</span>
+                  <span className="font-medium">Add another list</span>
+                </button>
+              </div>
+            )}
           </div>
         </div>
         
