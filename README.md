@@ -17,7 +17,7 @@ This Kanban Board component is a complete, production-ready implementation showc
 
 ## Live Demo
 
-- **Storybook (Chromatic)**: [View on Chromatic](https://690700cc0b802e7096e1cd99-yrmnlapovd.chromatic.com/)
+- **Storybook (Chromatic)**: [View on Chromatic](https://690700cc0b802e7096e1cd99-gyvggnjdby.chromatic.com/)
 - **Production Deployment**: [View on Vercel](https://kanban-component-kshitiz-jain.vercel.app/)
 
 ## Installation & Setup
@@ -32,8 +32,10 @@ This Kanban Board component is a complete, production-ready implementation showc
 1. **Clone or download the repository**
 
 ```bash
-cd kanban-component
+git clone https://github.com/Kshitizjain11/kanban-component-kshitiz-jain.git
+cd kanban-component-kshitiz-jain
 ```
+
 
 2. **Install dependencies**
 
