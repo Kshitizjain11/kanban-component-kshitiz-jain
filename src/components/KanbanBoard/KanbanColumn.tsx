@@ -338,11 +338,13 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
             ) : (
               <SortableContext items={column.tasks.map(task => task.id)}>
                 {column.tasks.map(task =>
-                  renderCard(
-                    task, 
-                    () => onEditTask(task),
-                    darkMode
-                  )
+                  <div key={task.id} role="listitem">
+                    {renderCard(
+                      task, 
+                      () => onEditTask(task),
+                      darkMode
+                    )}
+                  </div>
                 )}
               </SortableContext>
             )}

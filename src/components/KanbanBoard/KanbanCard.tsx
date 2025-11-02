@@ -92,7 +92,6 @@ const KanbanCard: React.FC<KanbanCardProps> = React.memo(({
   return (
     <div
       id={task.id}
-      role="button"
       tabIndex={0}
       aria-label={`${task.title}. Status: ${task.columnId}. Priority: ${task.priority}. Press space or enter to open. Use arrow keys to navigate between tasks.`}
       onKeyDown={handleKeyDown}
@@ -148,7 +147,7 @@ const KanbanCard: React.FC<KanbanCardProps> = React.memo(({
               className={clsx(
                 'w-6 h-6 rounded-full flex items-center justify-center text-xs',
                 'bg-white/90 hover:bg-white shadow-sm transition-opacity',
-                darkMode ? 'text-red-600' : 'text-red-500'
+                'text-red-600'
               )}
               aria-label="Delete task"
             >
@@ -240,7 +239,7 @@ const KanbanCard: React.FC<KanbanCardProps> = React.memo(({
               <span className={clsx(
                 'text-xs',
                 isOverdue(new Date(task.dueDate)) 
-                  ? 'text-red-500 font-medium' 
+                  ? 'text-red-600 font-medium' 
                   : darkMode ? 'text-gray-400' : 'text-gray-600'
               )}>
                 {format(new Date(task.dueDate), 'MMM d')}

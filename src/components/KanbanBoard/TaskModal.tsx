@@ -151,7 +151,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
               )}
               htmlFor="title"
             >
-              Title <span className="text-red-500">*</span>
+              Title <span className="text-red-600">*</span>
             </label>
             <input
               id="title"
@@ -368,7 +368,9 @@ const TaskModal: React.FC<TaskModalProps> = ({
                     <button
                       type="button"
                       onClick={() => handleRemoveTag(tag)}
-                      className="text-red-500 hover:text-red-700"
+                      className={clsx(
+                        darkMode ? 'text-red-500 hover:text-red-400' : 'text-red-600 hover:text-red-700'
+                      )}
                       aria-label={`Remove ${tag} tag`}
                     >
                       ×

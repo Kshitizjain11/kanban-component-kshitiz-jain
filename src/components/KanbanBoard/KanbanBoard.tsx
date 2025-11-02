@@ -457,6 +457,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ initialColumns, darkMode = fa
           <select
             value={filterAssignee}
             onChange={(e) => setFilterAssignee(e.target.value)}
+            aria-label="Filter by assignee"
             className={clsx(
               'px-3 py-1.5 text-sm rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500',
               darkMode
@@ -472,6 +473,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ initialColumns, darkMode = fa
           <select
             value={filterPriority}
             onChange={(e) => setFilterPriority(e.target.value)}
+            aria-label="Filter by priority"
             className={clsx(
               'px-3 py-1.5 text-sm rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500',
               darkMode
@@ -489,6 +491,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ initialColumns, darkMode = fa
             <select
               value={filterTag}
               onChange={(e) => setFilterTag(e.target.value)}
+              aria-label="Filter by tag"
               className={clsx(
                 'px-3 py-1.5 text-sm rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500',
                 darkMode

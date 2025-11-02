@@ -1,8 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import KanbanBoard from '../components/KanbanBoard/KanbanBoard';
+import KanbanBoard from './KanbanBoard';
+import type { Task, Column } from './KanbanBoard.types';
 
 // Sample data for the Kanban board
-const sampleTasks = [
+const sampleTasks: Task[] = [
   {
     id: 'task-1',
     title: 'Create UI Components',
@@ -71,7 +72,7 @@ const sampleTasks = [
 ];
 
 // Create sample columns with tasks
-const sampleColumns = [
+const sampleColumns: Column[] = [
   {
     id: 'todo',
     title: 'To Do',
@@ -95,7 +96,7 @@ const sampleColumns = [
 ];
 
 // Empty columns for the Empty state story
-const emptyColumns = [
+const emptyColumns: Column[] = [
   { id: 'todo', title: 'To Do', tasks: [] },
   { id: 'in-progress', title: 'In Progress', tasks: [] },
   { id: 'review', title: 'Review', tasks: [] },
@@ -152,7 +153,7 @@ export const ManyTasks: Story = {
           id: `many-task-${index}`,
           title: `Task ${index + 1}`,
           description: `Description for task ${index + 1}`,
-          priority: ['low', 'medium', 'high', 'urgent'][index % 4] as 'low' | 'medium' | 'high' | 'urgent',
+          priority: (['low', 'medium', 'high', 'urgent'] as const)[index % 4],
           columnId: 'todo',
           tags: [`Tag ${index % 3 + 1}`],
           dueDate: new Date(Date.now() + 86400000 * (index % 10))
@@ -282,3 +283,4 @@ export const AccessibilityDemo: Story = {
     },
   },
 };
+
