@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import React, { useState } from 'react';
 import KanbanBoard from './KanbanBoard';
 import type { Task, Column } from './KanbanBoard.types';
 
@@ -118,12 +119,23 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+// Wrapper component for dark mode toggle functionality
+const DarkModeWrapper: React.FC<{ args: any }> = ({ args }) => {
+  const [darkMode, setDarkMode] = useState(args.darkMode ?? false);
+  return React.createElement(KanbanBoard, {
+    ...args,
+    darkMode: darkMode,
+    onToggleDarkMode: () => setDarkMode(!darkMode)
+  });
+};
+
 // Default story with sample data
 export const Default: Story = {
   args: {
     initialColumns: sampleColumns,
     darkMode: false
   },
+  render: (args) => React.createElement(DarkModeWrapper, { args }),
 };
 
 // Dark mode story

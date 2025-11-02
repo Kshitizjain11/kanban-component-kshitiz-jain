@@ -32,7 +32,7 @@ This Kanban Board component is a complete, production-ready implementation showc
 1. **Clone or download the repository**
 
 ```bash
-cd kanbanBoard_Assignment
+cd kanban-component
 ```
 
 2. **Install dependencies**
@@ -112,7 +112,7 @@ npm run chromatic
 ## Architecture / Folder Structure
 
 ```
-kanban/
+kanban-component/
 ├── .storybook/              # Storybook configuration files
 ├── public/                  # Static assets
 ├── src/
