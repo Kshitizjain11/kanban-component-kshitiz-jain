@@ -34,19 +34,53 @@ const KanbanCard: React.FC<KanbanCardProps> = React.memo(({
     urgent: 'border-red-500',
   };
 
+  const priorityBadgeColorMap: Record<string, { bg: string; text: string }> = {
+    low: { bg: 'bg-blue-100', text: 'text-blue-700' },
+    medium: { bg: 'bg-yellow-100', text: 'text-yellow-700' },
+    high: { bg: 'bg-orange-100', text: 'text-orange-700' },
+    urgent: { bg: 'bg-red-100', text: 'text-red-700' },
+  };
+
+  const priorityBadgeColorDarkMap: Record<string, { bg: string; text: string }> = {
+    low: { bg: 'bg-blue-900/30', text: 'text-blue-300' },
+    medium: { bg: 'bg-yellow-900/30', text: 'text-yellow-300' },
+    high: { bg: 'bg-orange-900/30', text: 'text-orange-300' },
+    urgent: { bg: 'bg-red-900/30', text: 'text-red-300' },
+  };
+
   const borderColor = priorityColorMap[task.priority] || 'border-yellow-500';
+  const priorityBadge = darkMode 
+    ? priorityBadgeColorDarkMap[task.priority] || priorityBadgeColorDarkMap.medium
+    : priorityBadgeColorMap[task.priority] || priorityBadgeColorMap.medium;
+  
+  const priorityLabel = task.priority.charAt(0).toUpperCase() + task.priority.slice(1);
   
   // Show max 3 tags
   const visibleTags = task.tags?.slice(0, 3) || [];
   const hasMoreTags = (task.tags?.length || 0) > 3;
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    // Handle Enter/Space to activate/open card
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       onClick();
+      return;
     }
-    if (e.key === 'Escape' && onClick) {
-      onClick();
+    
+    // Escape is handled at board level for modal, but can also close quick actions
+    if (e.key === 'Escape') {
+      // If there are quick actions visible, just blur focus
+      if (isHovered) {
+        (e.currentTarget as HTMLElement).blur();
+      }
+      return;
+    }
+
+    // Arrow keys, Home, and End are handled at board level
+    // We don't prevent default here to allow board-level navigation
+    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) {
+      // Let the board-level handler manage navigation
+      return;
     }
   };
 
@@ -60,7 +94,7 @@ const KanbanCard: React.FC<KanbanCardProps> = React.memo(({
       id={task.id}
       role="button"
       tabIndex={0}
-      aria-label={`${task.title}. Status: ${task.columnId}. Priority: ${task.priority}. Press space or enter to open.`}
+      aria-label={`${task.title}. Status: ${task.columnId}. Priority: ${task.priority}. Press space or enter to open. Use arrow keys to navigate between tasks.`}
       onKeyDown={handleKeyDown}
       onClick={onClick}
       onMouseEnter={() => setIsHovered(true)}
@@ -125,11 +159,21 @@ const KanbanCard: React.FC<KanbanCardProps> = React.memo(({
       )}
 
       <div className="pl-2">
-        {/* Title - bold, truncated to 2 lines */}
-        <h4 className={clsx(
-          'font-bold text-sm mb-2 line-clamp-2',
-          darkMode ? 'text-white' : 'text-gray-900'
-        )}>{task.title}</h4>
+        {/* Title and Priority Badge */}
+        <div className="flex items-start justify-between gap-2 mb-2">
+          <h4 className={clsx(
+            'font-bold text-sm line-clamp-2 flex-1',
+            darkMode ? 'text-white' : 'text-gray-900'
+          )}>{task.title}</h4>
+          {/* Priority Badge */}
+          <span className={clsx(
+            'text-xs font-medium px-2 py-0.5 rounded-full shrink-0',
+            priorityBadge.bg,
+            priorityBadge.text
+          )}>
+            {priorityLabel}
+          </span>
+        </div>
 
         {/* Description - truncated to 2 lines */}
         {task.description && (

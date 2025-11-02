@@ -313,11 +313,16 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
 
       {/* Tasks List - Collapsible */}
       {!isCollapsed && (
-        <div className={clsx(
-          'flex-1 overflow-y-auto min-h-[200px] max-h-[calc(100vh-200px)]',
-          darkMode ? 'bg-gray-700' : 'bg-gray-50'
-        )} aria-live="polite">
-          <div className="px-2 pt-2 pb-6">
+        <div 
+          className={clsx(
+            'flex-1 overflow-y-auto min-h-[200px] max-h-[calc(100vh-280px)]',
+            darkMode ? 'bg-gray-700' : 'bg-gray-50'
+          )} 
+          role="list"
+          aria-label={`Tasks in ${column.title} column`}
+          aria-live="polite"
+        >
+          <div className="px-2 pt-2 pb-2">
             {column.tasks.length === 0 ? (
               // Empty State
               <div className={clsx(
@@ -345,11 +350,11 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
         </div>
       )}
 
-      {/* Add Task Button */}
+      {/* Add Task Button - Sticky at bottom */}
       {!isCollapsed && (
         <div className={clsx(
-          'p-2 border-t',
-          darkMode ? 'border-gray-600' : 'border-gray-200'
+          'sticky bottom-0 p-2 border-t z-10',
+          darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
         )}>
           <button
             onClick={onAddTask}
@@ -361,9 +366,10 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
                 ? 'bg-gray-600 hover:bg-gray-700 text-white'
                 : 'bg-white hover:bg-gray-50 text-gray-700 border border-gray-300'
             )}
-            aria-label={`Add task to ${column.title}`}
+            aria-label={`Add task to ${column.title} column`}
+            tabIndex={0}
           >
-            <span className="mr-1">+</span>
+            <span className="mr-1" aria-hidden="true">+</span>
             Add Task
           </button>
         </div>

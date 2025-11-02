@@ -5,16 +5,19 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { format } from 'date-fns';
 import clsx from 'clsx';
+import { MdDarkMode, MdLightMode } from 'react-icons/md';
 import KanbanColumn from './KanbanColumn';
 import KanbanCard from './KanbanCard';
 const TaskModal = React.lazy(() => import('./TaskModal'));
 import { moveTaskBetweenColumns, reorderTasks } from '../../utils/task.utils';
 import type { Task, Column } from './KanbanBoard.types';
 import { useDragAndDrop } from '../../hooks/useDragAndDrop';
+import { useKeyboardNavigation } from '../../hooks/useKeyboardNavigation';
 
 interface KanbanBoardProps {
   initialColumns: Column[];
   darkMode?: boolean;
+  onToggleDarkMode?: () => void;
 }
 
 // Sortable KanbanCard Component
@@ -42,7 +45,7 @@ const SortableKanbanCard: React.FC<{
   );
 };
 
-const KanbanBoard: React.FC<KanbanBoardProps> = ({ initialColumns, darkMode = false }) => {
+const KanbanBoard: React.FC<KanbanBoardProps> = ({ initialColumns, darkMode = false, onToggleDarkMode }) => {
   const [columns, setColumns] = useState<Column[]>(initialColumns);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -384,8 +387,27 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ initialColumns, darkMode = fa
     }
   }, [isModalOpen, handleCloseModal]);
 
+  // Keyboard navigation using custom hook
+  useKeyboardNavigation({
+    columns: filteredColumns,
+    isModalOpen
+  });
+
   return (
-    <div className={`h-full flex flex-col ${darkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}>
+    <div 
+      className={`h-full flex flex-col ${darkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}
+      role="application"
+      aria-label="Kanban Board"
+    >
+      {/* Screen reader announcements for keyboard navigation */}
+      <div
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        className="sr-only"
+        id="keyboard-navigation-announcements"
+      />
+      
       {/* Header */}
       <div className={clsx(
         'flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-4 border-b',
@@ -393,8 +415,28 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ initialColumns, darkMode = fa
       )}>
         <div className="flex items-center gap-4">
           <h2 className="text-xl font-semibold">Kanban Board</h2>
-          <div className="text-sm text-gray-500 dark:text-gray-400">
-            {format(new Date(), 'MMMM d, yyyy')}
+          <div className="flex items-center gap-2">
+            <div className="text-sm text-gray-500 dark:text-gray-400">
+              {format(new Date(), 'MMMM d, yyyy')}
+            </div>
+            {onToggleDarkMode && (
+              <button
+                onClick={onToggleDarkMode}
+                className={clsx(
+                  'p-1.5 rounded-lg transition-colors',
+                  darkMode
+                    ? 'hover:bg-gray-700 text-gray-300 hover:text-white'
+                    : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900'
+                )}
+                aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+              >
+                {darkMode ? (
+                  <MdLightMode className="w-5 h-5" />
+                ) : (
+                  <MdDarkMode className="w-5 h-5" />
+                )}
+              </button>
+            )}
           </div>
         </div>
 
