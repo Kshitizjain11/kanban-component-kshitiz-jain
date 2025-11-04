@@ -1,6 +1,5 @@
 # Kanban Board Component
 
-> **Frontend Developer Hiring Assignment – Kanban View**
 
 A fully functional, interactive Kanban Board component built with React, TypeScript, Tailwind CSS, and Storybook. This project demonstrates modern frontend development practices including drag-and-drop functionality, responsive design, accessibility compliance, and performance optimization techniques.
 
@@ -272,8 +271,5 @@ For questions, feedback, or contributions to this assignment submission, please 
 
 ## License
 
-This project is part of the Design System Component Library's hiring assignment. All submitted code remains the author's intellectual property.
-
 ---
 
-**Built for the Frontend Developer Hiring Assignment**
